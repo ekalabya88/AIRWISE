@@ -1,0 +1,6 @@
+{
+  "name": "AirWise - AI Air Pollution & Health Advisory",
+  "description": "Real-time air quality monitoring, CPCB/EPA AQI scale map, AI-powered personalized health advisories, and alert system.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

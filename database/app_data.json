@@ -1,0 +1,47 @@
+{
+  "users": {
+    "usr_65c6c7d19774d0f6": {
+      "id": "usr_65c6c7d19774d0f6",
+      "name": "Tester",
+      "email": "test@example.com",
+      "password_hash": "d24dc5c3a3a93eacd4bf938e24026817:cd42ee7ee50ce0471220288d57c9dcc0b0da9e7b9cff1f96d5d129a75a6cfc6ff05f91d41ad5b5b59b270d747518793c5074bdc9e39265bda512e1056e06c617",
+      "home_city": "Bhubaneswar",
+      "sensitivity_group": "general",
+      "alert_threshold": "moderate",
+      "notify_enabled": true,
+      "saved_locations": [
+        "Bhubaneswar",
+        "Delhi",
+        "Mumbai"
+      ],
+      "created_at": "2026-09-29T07:31:45.759Z"
+    }
+  },
+  "alerts": [
+    {
+      "id": "alt_0c913d4e11738fd4",
+      "user_id": "usr_65c6c7d19774d0f6",
+      "location": "Bhubaneswar",
+      "aqi": 85,
+      "category": "Satisfactory",
+      "title": "Welcome to AirWise • Bhubaneswar",
+      "precautions": [
+        "Real-time air pollution alerts are activated for your location.",
+        "Check your daily advisory before outdoor activities and morning runs.",
+        "Customized alerts will trigger when AQI reaches Moderate or higher."
+      ],
+      "read": false,
+      "created_at": "2026-09-29T07:31:45.760Z"
+    }
+  ],
+  "sessions": {
+    "ses_6d0b38378c052fd15c48a7b4b94d47b787e073e2d257964d": {
+      "user_id": "usr_65c6c7d19774d0f6",
+      "expires_at": 1793259105760
+    },
+    "ses_b7f5c616eef843d02cea8248abbd7036149bd20dd502408e": {
+      "user_id": "usr_65c6c7d19774d0f6",
+      "expires_at": 1793259114152
+    }
+  }
+}

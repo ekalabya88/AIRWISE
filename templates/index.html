@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AirWise - AI Air Pollution & Health Advisory</title>
+  <!-- Tailwind CSS CDN for Vanilla HTML/CSS/JS mode -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased font-sans selection:bg-emerald-100 selection:text-emerald-900">
+
+  <!-- ================= AUTH VIEW CONTAINER ================= -->
+  <div id="auth-view" class="min-h-screen bg-gradient-to-b from-slate-50 via-emerald-50/20 to-slate-100 flex flex-col justify-between relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-96 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-100/40 via-teal-50/20 to-transparent pointer-events-none"></div>
+
+    <header class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white shadow-md shadow-emerald-700/10 font-black text-xl">
+          🌿
+        </div>
+        <div>
+          <span class="font-extrabold text-xl tracking-tight text-slate-900">AIRWISE</span>
+          <span class="hidden sm:inline-block ml-2 text-xs font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+            Environmental Health
+          </span>
+        </div>
+      </div>
+      <div class="text-xs text-slate-500 font-medium hidden md:flex items-center gap-4">
+        <span>🛡️ CPCB & WHO Standards</span>
+        <span>·</span>
+        <span>⚡ Real-time Sensor Grid</span>
+      </div>
+    </header>
+
+    <main class="relative z-10 flex-1 flex items-center justify-center px-4 py-8 sm:py-12">
+      <div class="w-full max-w-md">
+        <div class="text-center mb-8">
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Breathe smarter.<br />
+            <span class="text-emerald-700">Understand your air.</span>
+          </h1>
+          <p class="mt-2 text-sm text-slate-600 max-w-sm mx-auto">
+            Real-time atmospheric intelligence, sensor monitoring, and personalized AI health advisories.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
+          <div id="auth-tabs" class="flex items-center p-1 bg-slate-100 rounded-xl mb-6">
+            <button id="tab-login-btn" onclick="setAuthTab('login')" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-white text-slate-900 shadow-sm transition-all">
+              Log In
+            </button>
+            <button id="tab-signup-btn" onclick="setAuthTab('signup')" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all">
+              Sign Up
+            </button>
+          </div>
+
+          <div id="auth-error" class="hidden mb-5 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2"></div>
+          <div id="auth-success" class="hidden mb-5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs"></div>
+
+          <!-- LOGIN FORM -->
+          <form id="form-login" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+              <input id="login-email" type="email" required placeholder="name@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <div class="flex items-center justify-between mb-1">
+                <label class="block text-xs font-semibold text-slate-700">Password</label>
+                <button type="button" onclick="setAuthTab('forgot')" class="text-xs text-emerald-700 hover:underline font-medium">Forgot password?</button>
+              </div>
+              <div class="relative">
+                <input id="login-password" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600 pr-10">
+                <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="w-full mt-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer">
+              Sign In to AirWise
+            </button>
+          </form>
+
+          <!-- SIGN UP FORM -->
+          <form id="form-signup" onsubmit="handleSignupSubmit(event)" class="space-y-4 hidden">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Full Name</label>
+              <input id="signup-name" type="text" required placeholder="e.g. Dr. Priya Sharma" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+              <input id="signup-email" type="email" required placeholder="priya@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Home City (For Alerts & Map)</label>
+              <input id="signup-city" type="text" value="Bhubaneswar" placeholder="e.g. Bhubaneswar" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Password (Min. 6 chars)</label>
+              <input id="signup-password" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Confirm Password</label>
+              <input id="signup-confirm" type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            </div>
+            <button type="submit" class="w-full mt-2 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm rounded-xl shadow-md transition-all cursor-pointer">
+              Create Free Account
+            </button>
+          </form>
+
+          <!-- FORGOT PASSWORD FORM -->
+          <form id="form-forgot" onsubmit="handleForgotSubmit(event)" class="space-y-4 hidden">
+            <h3 class="text-base font-bold text-slate-900">Reset Your Password</h3>
+            <p class="text-xs text-slate-600">Enter your account email to receive an emergency password reset token.</p>
+            <input id="forgot-email" type="email" required placeholder="name@example.com" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-slate-900 text-sm focus:outline-none focus:border-emerald-600">
+            <div class="flex gap-2">
+              <button type="button" onclick="setAuthTab('login')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl">Back</button>
+              <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-xl">Send Recovery</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="mt-4 p-3 bg-slate-100/80 rounded-xl border border-slate-200/60 text-center text-xs text-slate-500">
+          <span class="font-semibold text-slate-700">Quick Test:</span> Sign in with any email or click
+          <button onclick="fillDemoCredentials()" class="text-emerald-700 underline font-medium hover:text-emerald-800">Fill Demo Info</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 text-center text-xs text-slate-500 border-t border-slate-200/60">
+      AIRWISE System · Certified CPCB & WHO Ambient Air Quality Standard Metrics
+    </footer>
+  </div>
+
+  <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
+  <div id="app-view" class="hidden min-h-screen flex flex-col bg-slate-50">
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2.5 cursor-pointer" onclick="setNavTab('dashboard')">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 flex items-center justify-center text-white font-black">
+              🌿
+            </div>
+            <div>
+              <span class="font-extrabold text-lg tracking-tight text-slate-900">AIRWISE</span>
+              <span class="hidden sm:inline-block ml-2 text-[11px] font-medium text-slate-500">AI Advisory</span>
+            </div>
+          </div>
+
+          <nav class="hidden md:flex items-center gap-1 p-1 bg-slate-100 rounded-xl">
+            <button onclick="setNavTab('dashboard')" id="nav-dashboard-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white text-slate-900 shadow-sm">Dashboard</button>
+            <button onclick="setNavTab('map')" id="nav-map-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900">Station Map</button>
+            <button onclick="setNavTab('advisory')" id="nav-advisory-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900">AI Advisory</button>
+            <button onclick="setNavTab('history')" id="nav-history-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900">History</button>
+          </nav>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <!-- Notification Bell -->
+          <div class="relative">
+            <button onclick="toggleAlertsDropdown()" class="relative p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+              🔔
+              <span id="unread-badge" class="hidden absolute top-1 right-1 w-4 h-4 bg-rose-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+            </button>
+            <div id="alerts-dropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl border border-slate-200 shadow-2xl py-3 z-50">
+              <div class="px-4 pb-2 border-b border-slate-100 flex items-center justify-between font-bold text-sm">
+                <span>Pollution Alerts</span>
+                <button onclick="openSettingsModal()" class="text-xs text-emerald-700 underline">Settings</button>
+              </div>
+              <div id="alerts-list" class="max-h-80 overflow-y-auto divide-y divide-slate-100 p-2 text-xs"></div>
+            </div>
+          </div>
+
+          <!-- User Menu -->
+          <div class="flex items-center gap-2 p-1.5 pr-2.5 rounded-xl border border-slate-200/80 bg-white">
+            <div id="user-avatar" class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-xs">U</div>
+            <div class="hidden sm:block text-left text-xs leading-tight">
+              <div id="user-name-display" class="font-bold text-slate-900">User</div>
+              <div id="user-city-display" class="text-[10px] text-slate-500">Bhubaneswar</div>
+            </div>
+            <button onclick="handleLogout()" class="ml-2 text-xs font-semibold text-rose-600 hover:underline">Log Out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+      
+      <!-- DASHBOARD TAB CONTENT -->
+      <section id="tab-dashboard-view" class="space-y-8">
+        <!-- Hero Banner -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 text-white p-6 sm:p-10 shadow-lg">
+          <div class="relative z-10 max-w-2xl">
+            <span class="text-xs font-bold tracking-widest text-emerald-300 uppercase">🌿 AIRWISE · Continuous Air Quality</span>
+            <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mt-1">Breathe smarter.<br /><span class="text-emerald-400">Understand your air.</span></h1>
+            <p class="mt-3 text-sm sm:text-base text-slate-300 max-w-xl">Real-time atmospheric particulate monitoring, CPCB-calibrated risk detection, and clinical-grade preventive health advisories.</p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <button onclick="document.getElementById('live-aqi-card').scrollIntoView({behavior: 'smooth'})" class="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md transition-all">Check My Air Quality →</button>
+              <button onclick="detectUserLocation()" class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs sm:text-sm border border-white/10">📍 Near My Location</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Ribbon -->
+        <div class="flex flex-wrap items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">📍</div>
+            <div>
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">Monitoring Location</span>
+              <div class="font-extrabold text-sm text-slate-900"><span id="active-location-name">Bhubaneswar</span> | <span id="active-station-name" class="font-normal text-slate-500 text-xs">CPCB CAAQMS</span></div>
+            </div>
+          </div>
+          <div class="flex items-center gap-1.5 overflow-x-auto py-1">
+            <span class="text-xs text-slate-400 font-medium mr-1 hidden sm:inline">Quick Switch:</span>
+            <button onclick="changeLocation('Bhubaneswar')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-600 text-white">Bhubaneswar</button>
+            <button onclick="changeLocation('Delhi')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200">Delhi</button>
+            <button onclick="changeLocation('Mumbai')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200">Mumbai</button>
+            <button onclick="changeLocation('Bengaluru')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200">Bengaluru</button>
+            <button onclick="changeLocation('Kolkata')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200">Kolkata</button>
+          </div>
+        </div>
+
+        <!-- 1. LIVE AQI & WEATHER CARD + 2. CIRCULAR GAUGE -->
+        <div id="live-aqi-card" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 text-xs">
+              <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">🟢 Live Sensor Data · 2 min ago</span>
+              <span id="sensor-source-label" class="text-slate-400">Continuous CAAQMS</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-6 items-center">
+              <div>
+                <span class="text-xs font-bold text-slate-400 uppercase">Current Air Quality</span>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <span id="val-aqi-num" class="text-6xl font-black text-slate-900">85</span>
+                  <span id="val-aqi-tier" class="text-sm font-extrabold text-emerald-600">🟡 MEDIUM</span>
+                </div>
+                <span id="val-aqi-cat" class="text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded mt-2 inline-block">Moderate</span>
+              </div>
+              <div class="space-y-2 border-y md:border-y-0 md:border-x border-slate-100 py-4 md:py-0 md:px-6">
+                <span class="text-xs font-bold text-slate-400 uppercase">Weather Conditions</span>
+                <div class="text-xs flex justify-between"><span class="text-slate-500">Condition:</span> <strong id="val-weather-cond">29°C • Partly Cloudy</strong></div>
+                <div class="text-xs flex justify-between"><span class="text-slate-500">Humidity:</span> <strong id="val-weather-hum">72%</strong></div>
+                <div class="text-xs flex justify-between"><span class="text-slate-500">Wind:</span> <strong id="val-weather-wind">12 km/h</strong></div>
+              </div>
+              <div>
+                <span class="text-xs font-bold text-slate-400 uppercase block mb-2">Sub-Indices</span>
+                <div class="grid grid-cols-3 gap-1.5 text-center text-xs">
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">PM2.5</span><strong id="val-pm25">36.4</strong></div>
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">PM10</span><strong id="val-pm10">68.2</strong></div>
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">NO₂</span><strong id="val-no2">24.1</strong></div>
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">SO₂</span><strong id="val-so2">11.5</strong></div>
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">CO</span><strong id="val-co">0.8</strong></div>
+                  <div class="p-1.5 bg-slate-50 rounded border border-slate-100"><span class="text-[10px] text-slate-400 block">O₃</span><strong id="val-o3">42.0</strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Gauge -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+              <span class="text-xs font-bold text-slate-500 uppercase">Pollution Level</span>
+              <span id="gauge-badge" class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-800">🟡 MEDIUM</span>
+            </div>
+            <div class="relative flex flex-col items-center justify-center my-4">
+              <svg class="w-56 h-32" viewBox="0 0 220 120">
+                <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#e2e8f0" stroke-width="14" stroke-linecap="round"/>
+                <path id="gauge-arc" d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="#eab308" stroke-width="14" stroke-linecap="round" stroke-dasharray="282.7" stroke-dashoffset="180"/>
+              </svg>
+              <div class="absolute bottom-2 flex flex-col items-center">
+                <span class="text-xs font-semibold text-slate-400">AQI</span>
+                <span id="gauge-aqi-val" class="text-4xl font-black text-slate-900 leading-none">85</span>
+                <span id="gauge-cat-val" class="text-xs font-bold text-slate-700 mt-1">Moderate 🟡</span>
+              </div>
+            </div>
+            <div class="pt-3 border-t border-slate-100">
+              <h4 class="text-xs font-bold text-slate-900 mb-1">What does this mean?</h4>
+              <p id="gauge-meaning" class="text-xs text-slate-600">Air quality is moderate today. If sensitive to pollution, consider reducing prolonged outdoor workouts.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. NEARBY AIR QUALITY -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-slate-100 gap-2">
+            <div>
+              <span class="text-xs font-bold text-slate-500 uppercase">Local Grid Monitoring</span>
+              <h3 class="text-lg font-extrabold text-slate-900">Nearby Air Quality</h3>
+            </div>
+            <button onclick="setNavTab('map')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold">View Interactive Map →</button>
+          </div>
+          <div id="nearby-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4"></div>
+        </div>
+
+        <!-- 4. AI HEALTH ADVISORY -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-slate-500 uppercase">Personalized Health Guidance</span>
+              <h3 class="text-xl font-extrabold text-slate-900">AI Health Advisory</h3>
+            </div>
+            <span id="advisory-pill" class="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100">🟡 MEDIUM AQI</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Who are you? (Select Sensitivity Profile)</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="sensitivity-selector">
+              <button onclick="selectSensitivity('general')" data-id="general" class="p-3 rounded-xl border border-emerald-600 bg-emerald-50 text-left cursor-pointer">
+                <div class="text-xl">👤</div>
+                <div class="font-bold text-xs text-slate-900">General Public</div>
+              </button>
+              <button onclick="selectSensitivity('children')" data-id="children" class="p-3 rounded-xl border border-slate-200 bg-white text-left cursor-pointer">
+                <div class="text-xl">👶</div>
+                <div class="font-bold text-xs text-slate-900">Children</div>
+              </button>
+              <button onclick="selectSensitivity('elderly')" data-id="elderly" class="p-3 rounded-xl border border-slate-200 bg-white text-left cursor-pointer">
+                <div class="text-xl">👵</div>
+                <div class="font-bold text-xs text-slate-900">Elderly</div>
+              </button>
+              <button onclick="selectSensitivity('respiratory')" data-id="respiratory" class="p-3 rounded-xl border border-slate-200 bg-white text-left cursor-pointer">
+                <div class="text-xl">🫁</div>
+                <div class="font-bold text-xs text-slate-900">Respiratory</div>
+              </button>
+              <button onclick="selectSensitivity('outdoor_sports')" data-id="outdoor_sports" class="p-3 rounded-xl border border-slate-200 bg-white text-left cursor-pointer">
+                <div class="text-xl">🏃</div>
+                <div class="font-bold text-xs text-slate-900">Outdoor Sports</div>
+              </button>
+              <button onclick="selectSensitivity('outdoor_worker')" data-id="outdoor_worker" class="p-3 rounded-xl border border-slate-200 bg-white text-left cursor-pointer">
+                <div class="text-xl">👷</div>
+                <div class="font-bold text-xs text-slate-900">Outdoor Worker</div>
+              </button>
+            </div>
+          </div>
+
+          <div class="p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-slate-50 border border-emerald-200">
+            <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">✨ AI Advisory Analysis</span>
+            <p id="advisory-text" class="text-sm sm:text-base font-semibold text-slate-800 leading-relaxed">
+              "Air quality is moderate today. If you are sensitive to air pollution, consider reducing prolonged outdoor activity, especially near heavy traffic."
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-5 rounded-2xl bg-emerald-50/40 border border-emerald-200">
+              <h4 class="font-extrabold text-sm text-emerald-950 uppercase mb-3">💡 WHAT TO DO</h4>
+              <ul id="what-to-do-list" class="space-y-2 text-xs text-slate-700"></ul>
+            </div>
+            <div class="p-5 rounded-2xl bg-rose-50/40 border border-rose-200">
+              <h4 class="font-extrabold text-sm text-rose-950 uppercase mb-3">🚫 WHAT NOT TO DO</h4>
+              <ul id="what-not-to-do-list" class="space-y-2 text-xs text-slate-700"></ul>
+            </div>
+          </div>
+
+          <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-500">
+            <strong>Medical Notice:</strong> General environmental health information only; not a substitute for professional medical diagnosis or clinical treatment.
+          </div>
+        </div>
+
+        <!-- 5. AIR QUALITY HISTORY -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div>
+              <span class="text-xs font-bold text-slate-500 uppercase">Atmospheric Trends</span>
+              <h3 class="text-xl font-extrabold text-slate-900">Your Air Quality History</h3>
+            </div>
+            <div class="flex p-1 bg-slate-100 rounded-xl text-xs font-bold">
+              <button onclick="setHistoryTab('weekly')" id="hist-tab-weekly" class="px-3 py-1.5 bg-white rounded-lg shadow-sm">Weekly Recap</button>
+              <button onclick="setHistoryTab('monthly')" id="hist-tab-monthly" class="px-3 py-1.5 text-slate-600 rounded-lg">Monthly Recap</button>
+            </div>
+          </div>
+          <div id="history-container"></div>
+        </div>
+      </section>
+
+      <!-- MAP TAB CONTENT -->
+      <section id="tab-map-view" class="hidden space-y-6">
+        <div>
+          <h2 class="text-2xl font-black text-slate-900 tracking-tight">Interactive Air Quality Monitoring Map</h2>
+          <p class="text-xs text-slate-500 mt-1">Leaflet & OpenStreetMap tiles with official CPCB scale and strict alphabetical (A→Z) search.</p>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row gap-3">
+            <div class="relative flex-1">
+              <input id="map-search-input" oninput="handleMapSearch(event)" type="text" placeholder="Search station or city (Alphabetical A→Z)..." class="w-full pl-4 pr-4 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm">
+              <div id="map-search-dropdown" class="hidden absolute left-0 right-0 mt-1 bg-white rounded-xl border border-slate-200 shadow-xl max-h-60 overflow-y-auto z-[1000] text-xs"></div>
+            </div>
+            <button onclick="detectUserLocation()" class="px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold">📍 Use My Location</button>
+          </div>
+          <div id="leaflet-map" class="w-full h-[480px] rounded-xl border border-slate-200"></div>
+        </div>
+      </section>
+
+      <!-- ADVISORY TAB CONTENT -->
+      <section id="tab-advisory-view" class="hidden space-y-6">
+        <h2 class="text-2xl font-black text-slate-900 tracking-tight">AI Health Advisory & Clinical Guidance</h2>
+        <div id="deep-dive-advisory-slot"></div>
+      </section>
+
+      <!-- HISTORY TAB CONTENT -->
+      <section id="tab-history-view" class="hidden space-y-6">
+        <h2 class="text-2xl font-black text-slate-900 tracking-tight">Atmospheric Analytics & History</h2>
+        <div id="deep-dive-history-slot"></div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-16 bg-slate-900 text-slate-300 border-t border-slate-800 py-10 px-4 text-center text-xs">
+      <div class="max-w-7xl mx-auto space-y-3">
+        <div class="text-white font-extrabold text-base">🌿 AIRWISE — AI Air Pollution & Health Advisory</div>
+        <p class="text-slate-400 max-w-xl mx-auto">Built with standard Python, SQL, HTML5, CSS3, and JavaScript adhering to Central Pollution Control Board (CPCB) standards.</p>
+        <div class="text-[11px] text-slate-500 font-mono">Python Flask Microservice · SQLite Database · JavaScript Client</div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full p-6 space-y-4">
+      <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+        <h3 class="font-extrabold text-slate-900 text-base">Pollution Alert Settings</h3>
+        <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div>
+        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Trigger Threshold</label>
+        <select id="modal-threshold" class="w-full p-2 border border-slate-300 rounded-xl text-xs">
+          <option value="satisfactory">Satisfactory (> 50 AQI)</option>
+          <option value="moderate" selected>Moderate (> 100 AQI)</option>
+          <option value="poor">Poor (> 200 AQI)</option>
+          <option value="severe">Severe (> 300 AQI)</option>
+        </select>
+      </div>
+      <div class="p-3 bg-amber-50 rounded-xl border border-amber-200 flex justify-between items-center">
+        <div><strong class="text-xs text-amber-900 block">Fire Test Precaution Alert</strong><span class="text-[10px] text-amber-700">Deduplicated in-app notification test</span></div>
+        <button onclick="fireTestAlert()" class="px-3 py-1.5 bg-amber-600 text-white rounded-lg text-xs font-bold">Fire</button>
+      </div>
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button onclick="closeSettingsModal()" class="px-4 py-2 text-xs font-semibold text-slate-600">Cancel</button>
+        <button onclick="saveModalSettings()" class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Save Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/static/js/script.js"></script>
+</body>
+</html>
