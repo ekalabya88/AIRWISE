@@ -229,7 +229,22 @@ void handleClient(int clientSocket) {
     }
     // REST API: Auth / Check Session
     else if (url.find("/api/auth/me") == 0) {
-        std::string json = "{\"authenticated\":true,\"user\":{\"id\":\"demo_user\",\"name\":\"Student\",\"email\":\"student@airwise.local\",\"home_city\":\"Bhubaneswar\",\"sensitivity_group\":\"general\"}}";
+        std::string json = "{\"authenticated\":true,\"user\":{\"id\":\"demo_user\",\"name\":\"Maya\",\"email\":\"sahuekalabya296@gmail.com\",\"home_city\":\"Bhubaneswar\",\"sensitivity_group\":\"general\"}}";
+        response = makeHttpResponse("application/json", json);
+    }
+    // REST API: Auth / Signup
+    else if (url.find("/api/auth/signup") == 0) {
+        std::string json = "{\"success\":true,\"user\":{\"id\":\"user_maya\",\"name\":\"Maya\",\"email\":\"sahuekalabya296@gmail.com\",\"home_city\":\"Bhubaneswar\",\"sensitivity_group\":\"general\"}}";
+        response = makeHttpResponse("application/json", json);
+    }
+    // REST API: Auth / Login
+    else if (url.find("/api/auth/login") == 0) {
+        std::string json = "{\"success\":true,\"user\":{\"id\":\"user_maya\",\"name\":\"Maya\",\"email\":\"sahuekalabya296@gmail.com\",\"home_city\":\"Bhubaneswar\",\"sensitivity_group\":\"general\"}}";
+        response = makeHttpResponse("application/json", json);
+    }
+    // REST API: Auth / Logout
+    else if (url.find("/api/auth/logout") == 0) {
+        std::string json = "{\"success\":true}";
         response = makeHttpResponse("application/json", json);
     }
     // REST API: Notifications
