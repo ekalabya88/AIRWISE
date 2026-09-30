@@ -16,7 +16,6 @@
 #include <fstream>
 #include <cstring>
 #include <cmath>
-#include <thread>
 #include <chrono>
 #include <algorithm>
 #include <map>
@@ -305,7 +304,7 @@ int main(int argc, char* argv[]) {
         socklen_t clientLen = sizeof(clientAddr);
         int clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientLen);
         if (clientSocket >= 0) {
-            std::thread(handleClient, clientSocket).detach();
+            handleClient(clientSocket);
         }
     }
 
