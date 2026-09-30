@@ -2,25 +2,21 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "C++: AirWise Server (gdb/lldb)",
+      "name": "C++: AirWise Server (Windows)",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/airwise_server",
+      "program": "${workspaceFolder}/airwise_server.exe",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "externalConsole": false,
       "MIMode": "gdb",
-      "preLaunchTask": "build_cpp"
-    },
-    {
-      "name": "Web Preview (Vite/Node)",
-      "type": "node",
-      "request": "launch",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "console": "integratedTerminal"
+      "preLaunchTask": "build_cpp",
+      "windows": {
+        "program": "${workspaceFolder}/airwise_server.exe",
+        "MIMode": "gdb"
+      }
     }
   ]
 }

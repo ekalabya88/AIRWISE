@@ -9,16 +9,35 @@
         "-std=c++17",
         "-g",
         "${workspaceFolder}/main.cpp",
-        "-lsqlite3",
-        "-lpthread",
+        "-lws2_32",
         "-o",
-        "${workspaceFolder}/airwise_server"
+        "${workspaceFolder}/airwise_server.exe"
       ],
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "problemMatcher": ["$gcc"]
+      "problemMatcher": ["$gcc"],
+      "windows": {
+        "args": [
+          "-std=c++17",
+          "-g",
+          "${workspaceFolder}/main.cpp",
+          "-lws2_32",
+          "-o",
+          "${workspaceFolder}/airwise_server.exe"
+        ]
+      },
+      "linux": {
+        "args": [
+          "-std=c++17",
+          "-g",
+          "${workspaceFolder}/main.cpp",
+          "-lpthread",
+          "-o",
+          "${workspaceFolder}/airwise_server"
+        ]
+      }
     }
   ]
 }
